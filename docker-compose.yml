@@ -1,0 +1,23 @@
+version: '3'
+services:
+  ingestion-agent:
+    build: './ingestion-agent'
+    volumes:
+      - .:/go/src/mypostback
+    ports:
+      - "80:80"
+    environment:
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+  redis:
+    image: "redis"
+    command: redis-server --port ${REDIS_PORT} --requirepass '${REDIS_PASSWORD}'
+  delivery-agent:
+    build: './delivery-agent'
+    volumes:
+      - .:/go/src/mypostback
+    working_dir: /go/src/mypostback
+    command: go run delivery-agent/deliver.go
+    environment:
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
