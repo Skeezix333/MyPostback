@@ -26,7 +26,7 @@ Shut down
 #### Accessing log file
 The log file of responses (e.g. delivery time, response code, response time, and response body) is stored in log.txt and is 
 created when the program is run and sent RAW POST DATA. Alternatively, vim is installed in the docker image for the delivery-agent
-and can be accessed by go into the CLI of the image.
+and can be accessed by going into the CLI of the image.
 </br> </br>
 After inititializing docker-compose in background: 
 </br>
