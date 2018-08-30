@@ -140,6 +140,7 @@ func main() {
 		}
 	}
 
+	//Allows the app to run in Docker until it is pulled down
 	var wg sync.WaitGroup
 	wg.Add(1)
 	wg.Wait()
