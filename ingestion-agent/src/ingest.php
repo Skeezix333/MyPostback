@@ -13,9 +13,11 @@ echo('<br>');
 echo "Server is running: ".$redis->ping(); 
 echo('<br>');
 
+//Responsible for recieving RAW POST DATA
 $json = file_get_contents("php://input");
 $decoded = json_decode($json, true);
 
+//Creates redis object to push (Currently not very Generalizable)
 if ($decoded['data'] && $decoded['endpoint']) {
     $postback = $decoded["endpoint"];
     $postback["data"] = $decoded["data"][0];

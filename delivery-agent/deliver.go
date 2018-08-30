@@ -17,6 +17,7 @@ import (
 	"gopkg.in/redis.v5"
 )
 
+//Initializes Redis Client
 func newClient() *redis.Client {
 	client := redis.NewClient(&redis.Options{
 		Addr:     "redis:" + os.Getenv("REDIS_PORT"),
@@ -26,6 +27,7 @@ func newClient() *redis.Client {
 	return client
 }
 
+//Simply creates a logger to push the errors and responses to
 func createLogger(filename string) *os.File {
 	file, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
@@ -41,6 +43,7 @@ type postback struct {
 	Data   map[string]string `json:"data"`
 }
 
+//Uses BRPop which pulls the most recent push from the redis queue
 func getPostObj(client *redis.Client, postObj string) (*postback, error) {
 	str, err := client.BRPop(0, postObj).Result()
 
@@ -54,15 +57,15 @@ func getPostObj(client *redis.Client, postObj string) (*postback, error) {
 	return &post, nil
 }
 
+//Takes in the postObject URL and reformats it so it can be put into a GET request
 func postToURL(data postback) string {
-	//loop though the data section of the postback object replace {xxx} with Date[xxx]
+	//Finds the bracketed keys and replaces them with the corresponding value.
 	for key, value := range data.Data {
 		value = url.QueryEscape(value)
 		re := regexp.MustCompile(regexp.QuoteMeta("{" + key + "}"))
 		data.URL = re.ReplaceAllString(data.URL, value)
 	}
-
-	//if there are any unmatched {xxx} strings remove them from the final url
+	//Removes empty/keyless brackets
 	re := regexp.MustCompile("{.*?}")
 	data.URL = re.ReplaceAllString(data.URL, "")
 
@@ -76,6 +79,7 @@ type responseData struct {
 	responseBody string
 }
 
+//Sends GET request and creates response struct
 func getRequest(URL string, requestType string) (*responseData, error) {
 
 	var getData responseData
